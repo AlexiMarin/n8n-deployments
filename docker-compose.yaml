@@ -1,0 +1,41 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:${PORT}:5678"
+    environment:
+      # Configuración básica
+      - N8N_HOST=${DOMAIN}
+      - N8N_PORT=${PORT}
+      - N8N_PROTOCOL=https
+      - NODE_ENV=production
+
+      # Timezone
+      - GENERIC_TIMEZONE=${TIMEZONE}
+      - TZ=${TIMEZONE}
+      
+      # Webhooks y URLs públicas
+      - WEBHOOK_URL=${DOMAIN}
+      - N8N_EDITOR_BASE_URL=${DOMAIN}
+
+      # Runners
+      - N8N_RUNNERS_ENABLED=true
+
+      # Base de datos
+      - DB_SQLITE_POOL_SIZE=1
+
+      # Seguridad
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      - N8N_GIT_NODE_DISABLE_BARE_REPOS=true
+
+      # CRÍTICO: Confiar en el proxy (Apache)
+      - N8N_PUSH_BACKEND=websocket
+
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./local-files:/files
+
+volumes:
+  n8n_data:
